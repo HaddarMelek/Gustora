@@ -1,0 +1,8 @@
+.form-container {
+    border-top-left-radius: .25rem;
+    border-top-right-radius: .25rem;
+    border-width: 1px;
+    padding: 1.5rem;
+    margin-left: 0;
+    margin-right: 0;
+}
