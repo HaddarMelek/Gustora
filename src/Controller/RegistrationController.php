@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Controller;
-
+use App\Entity\Role;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,10 +21,19 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-           
-            $plainPassword = (string)$form->get('plainPassword')->getData();
+
+            $plainPassword = (string) $form->get('plainPassword')->getData();
 
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+            $role = $entityManager->getRepository(Role::class)->findOneBy(['role' => 'ROLE_USER']);
+            if (!$role) {
+                $role = new Role();
+                $role->setRole('ROLE_USER');
+                $entityManager->persist($role); 
+            }
+            
+            $user->addRole($role);
+            
             $entityManager->persist($user);
             $entityManager->flush();
 
