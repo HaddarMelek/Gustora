@@ -40,9 +40,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private string $phoneNumber;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $otpCode = null;
+
     public function __construct()
     {
-        $this->roles = new ArrayCollection(); 
+        $this->roles = new ArrayCollection();
     }
 
     public function getCountryCode(): string
@@ -81,6 +84,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+    public function getOtpCode(): ?int
+    {
+        return $this->otpCode;
+    }
+
+    public function setOtpCode(?int $otpCode): self
+    {
+        $this->otpCode = $otpCode;
+
+        return $this;
+    }
 
     /**
      * A visual identifier that represents this user.
@@ -92,21 +106,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return (string) $this->email;
     }
 
-   /**
- * @see UserInterface
- *
- * @return array<string>
- */
-public function getRoles(): array
-{
-    $roles = $this->roles->map(function ($role) {
-        return $role->getRole();  
-    })->toArray();
+    /**
+     * @see UserInterface
+     *
+     * @return array<string>
+     */
+    public function getRoles(): array
+    {
+        $roles = $this->roles->map(function ($role) {
+            return $role->getRole();
+        })->toArray();
 
-    $roles[] = 'ROLE_USER';
+        $roles[] = 'ROLE_USER';
 
-    return array_unique($roles); 
-}
+        return array_unique($roles);
+    }
 
 
     /**
@@ -139,7 +153,7 @@ public function getRoles(): array
      */
     public function eraseCredentials(): void
     {
-        
+
     }
 
     /**
