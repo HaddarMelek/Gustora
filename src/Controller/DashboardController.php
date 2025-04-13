@@ -11,8 +11,9 @@ final class DashboardController extends AbstractController
     #[Route('/admin', name: 'admin_dashboard')]
     public function admin(): Response
     {
-        return $this->render('dashboard/admin_dashboard.html.twig');
-    }
+        return $this->render('dashboard/admin_dashboard.html.twig', [
+            'category_management_link' => $this->generateUrl('app_category_index')
+        ]);    }
 
     #[Route('/user', name: 'user_dashboard')]
     public function user(): Response
