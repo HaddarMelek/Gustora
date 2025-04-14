@@ -1,4 +1,20 @@
 {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+    {{ form_row(form.name) }}
+    {{ form_row(form.description) }}
+    {{ form_row(form.price) }}
+    {{ form_row(form.stock) }}
+    {{ form_row(form.category) }}
+    
+    <div class="mb-3">
+        {{ form_label(form.imageFile) }}
+        {% if form.vars.data.image %}
+            <img src="{{ vich_uploader_asset(form.vars.data, 'imageFile') }}" 
+                 class="img-thumbnail mb-2" 
+                 style="max-height: 100px; display: block;">
+        {% endif %}
+        {{ form_widget(form.imageFile) }}
+        {{ form_help(form.imageFile) }}
+    </div>
+
+    <button class="btn btn-primary">{{ button_label|default('Save') }}</button>
 {{ form_end(form) }}

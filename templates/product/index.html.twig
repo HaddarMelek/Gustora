@@ -25,7 +25,12 @@
                 <td>{{ product.description }}</td>
                 <td>{{ product.price }}</td>
                 <td>{{ product.stock }}</td>
-                <td>{{ product.image }}</td>
+                  <td>
+                    {% if product.image %}
+                        <img src="{{ vich_uploader_asset(product, 'imageFile') }}" 
+                             style="height: 50px;">
+                    {% endif %}
+                </td>
                 <td>
                     <a href="{{ path('app_product_show', {'id': product.id}) }}">show</a>
                     <a href="{{ path('app_product_edit', {'id': product.id}) }}">edit</a>

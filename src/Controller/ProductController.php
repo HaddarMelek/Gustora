@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('admin/product')]
+#[Route('/admin/product')]
 final class ProductController extends AbstractController
 {
     #[Route(name: 'app_product_index', methods: ['GET'])]
@@ -30,6 +30,11 @@ final class ProductController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            if ($product->getImageFile() instanceof \Symfony\Component\HttpFoundation\File\File) {
+                $this->addFlash('success', 'Image updated successfully');
+            } elseif ($form->get('imageFile')->get('delete')->getData()) {
+                $this->addFlash('success', 'Image removed successfully');
+            }
             $entityManager->persist($product);
             $entityManager->flush();
 
@@ -57,6 +62,11 @@ final class ProductController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            if ($product->getImageFile() instanceof \Symfony\Component\HttpFoundation\File\File) {
+                $this->addFlash('success', 'Image updated successfully');
+            } elseif ($form->get('imageFile')->get('delete')->getData()) {
+                $this->addFlash('success', 'Image removed successfully');
+            }
             $entityManager->flush();
 
             return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
