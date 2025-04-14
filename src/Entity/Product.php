@@ -51,27 +51,59 @@ class Product
         return $this;
     }
 
-    public function getImage(): ?string
-    {
-        return $this->image;
-    }
+    public function getDescription(): ?string
+{
+    return $this->description;
+}
 
-    public function setImage(string $image): static
-    {
-        $this->image = $image;
+public function setDescription(?string $description): static
+{
+    $this->description = $description;
+    return $this;
+}
+public function getPrice(): ?string
+{
+    return $this->price;
+}
 
-        return $this;
-    }
+public function setPrice(string|float|null $price): static
+{
+    $this->price = $price;
+    return $this;
+}
+public function getStock(): ?int
+{
+    return $this->stock;
+}
 
-    public function getCategory(): ?Category
-    {
-        return $this->category;
-    }
+public function setStock(int $stock): static
+{
+    $this->stock = $stock;
+    return $this;
+}
 
-    public function setCategory(?Category $category): static
-    {
-        $this->category = $category;
+public function getImage(): ?string
+{
+    return $this->image;
+}
 
-        return $this;
-    }
+public function setImage(string $image): static
+{
+    $this->image = $image;
+
+    return $this;
+}
+
+public function getCategory(): ?Category
+{
+    return $this->category;
+}
+
+public function setCategory(?Category $category): static
+{
+    $this->category = $category;
+
+    return $this;
+}
+
 }
