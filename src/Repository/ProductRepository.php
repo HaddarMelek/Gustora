@@ -12,6 +12,26 @@ class ProductRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Product::class);
     }
+
+public function findByFilters($minPrice = null, $maxPrice = null, $categoryId = null)
+{
+    $qb = $this->createQueryBuilder('p')  ->leftJoin('p.category', 'c');
+
+    if ($minPrice !== null) {
+        $qb->andWhere('p.price >= :minPrice')->setParameter('minPrice', $minPrice);
+    }
+
+    if ($maxPrice !== null) {
+        $qb->andWhere('p.price <= :maxPrice')->setParameter('maxPrice', $maxPrice);
+    }
+
+    if ($categoryId !== null && $categoryId !== '') {
+        $qb->andWhere('c.id = :categoryId')->setParameter('categoryId', $categoryId);
+    }
+
+    return $qb->getQuery()->getResult();
+}
+
 }
 
     //    /**
