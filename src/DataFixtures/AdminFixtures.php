@@ -28,8 +28,8 @@ class AdminFixtures extends Fixture
 
         $adminUser = new User();
         $adminUser->setEmail('admin@example.com');
-        $adminUser->setCountryCode('US');
-        $adminUser->setPhoneNumber('1234567890');
+        $adminUser->setCountryCode('+216');
+        $adminUser->setPhoneNumber('26379765');
         $adminUser->setPassword($this->passwordHasher->hashPassword($adminUser, 'adminpassword'));
 
         $adminUser->addRole($roleAdmin); 

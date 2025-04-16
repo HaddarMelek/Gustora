@@ -72,9 +72,5 @@ class OTPController extends AbstractController
         }
     }
 
-    #[Route('/admin', name: 'admin_dashboard')]
-    public function adminDashboard(): Response
-    {
-        return $this->render('dashboard/admin_dashboard.html.twig');
-    }
+   
 }
