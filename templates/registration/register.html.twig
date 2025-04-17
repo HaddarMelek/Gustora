@@ -1,46 +1,99 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Register - Gustora{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .register-container {
+            min-height: 100vh;
+            background: linear-gradient(rgba(15, 23, 43, .9), rgba(15, 23, 43, .9)), url({{ asset('assets/img/bg-hero.jpg') }});
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        .form-container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 3rem;
+            border-radius: 10px;
+            max-width: 800px;
+            width: 90%;
+            margin: 6rem auto;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .form-container input {
+            padding: 1rem;
+            font-size: 1.1rem;
+        }
+        .form-container h1 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
-    {% for flashError in app.flashes('registration_error') %}
-        <div class="alert alert-danger" role="alert">{{ flashError }}</div>
-    {% endfor %}
+    <div class="container-xxl bg-white p-0">
+        <!-- Spinner Start -->
+        <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+        <!-- Spinner End -->
 
-    <h1>Register</h1>
-    <div class="form-container">
-        {{ form_start(registrationForm) }}
-        <div class="mb-3">
-            {{ form_label(registrationForm.email) }}
-            {{ form_widget(registrationForm.email) }}
-        </div>
+        <!-- Navbar Start -->
+        {% include 'partials/_navbar.html.twig' %}
+        <!-- Navbar End -->
 
-        <div class="mb-3">
-            {{ form_row(registrationForm.countryCode, {
-                label: 'Country Code'
-            }) }}
-        </div>
-        <div class="mb-3">
-            {{ form_row(registrationForm.phoneNumber, {
-                label: 'Phone Number'
-            }) }}
-        </div>
+        <div class="register-container d-flex align-items-center">
+            <div class="form-container">
+                {% for flashError in app.flashes('registration_error') %}
+                    <div class="alert alert-danger" role="alert">{{ flashError }}</div>
+                {% endfor %}
 
-        <div class="mb-3">
-            {{ form_row(registrationForm.plainPassword.first, {
-                label: 'Password'
-            }) }}
+                <h1 class="text-center">Create Your Account</h1>
+                {{ form_start(registrationForm) }}
+                    <div class="mb-3">
+                        {{ form_label(registrationForm.email) }}
+                        {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(registrationForm.countryCode) }}
+                        {{ form_widget(registrationForm.countryCode, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(registrationForm.phoneNumber) }}
+                        {{ form_widget(registrationForm.phoneNumber, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(registrationForm.plainPassword.first) }}
+                        {{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(registrationForm.plainPassword.second) }}
+                        {{ form_widget(registrationForm.plainPassword.second, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        {{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'form-check-input'}}) }}
+                        {{ form_label(registrationForm.agreeTerms) }}
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary py-3">Register</button>
+                        <a href="{{ path('app_login') }}" class="btn btn-outline-primary py-3">Already have an account?</a>
+                    </div>
+                {{ form_end(registrationForm) }}
+            </div>
         </div>
-        <div class="mb-3">
-            {{ form_row(registrationForm.plainPassword.second, {
-                label: 'Repeat Password'
-            }) }}
-        </div>
-        <div class="mb-3 form-check">
-            {{ form_row(registrationForm.agreeTerms) }}
-        </div>
-        <button type="submit" class="btn btn-primary">Register</button>
-        <a href="/login">Login</a>
-        {{ form_end(registrationForm) }}
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
 {% endblock %}
