@@ -22,6 +22,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb justify-content-center text-uppercase">
                             <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Home</a></li>
+                            <li class="breadcrumb-item text-white">Pages</li>
                             <li class="breadcrumb-item text-white active" aria-current="page">Team</li>
                         </ol>
                     </nav>
@@ -31,26 +32,21 @@
         <!-- Navbar & Hero End -->
 
         <!-- Team Start -->
-        <div class="container-xxl pt-5 pb-3">
+        <div class="container-xxl pt-2 pb-2">
             <div class="container">
                 <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                    <h5 class="section-title ff-secondary text-center text-primary fw-normal">Team Members</h5>
-                    <h1 class="mb-5">Our Master Chefs</h1>
+                    <h5 class="section-title ff-secondary text-center text-primary fw-normal">Our Team</h5>
+                    <h1 class="mb-1">Our Master Chefs</h1>
                 </div>
                 <div class="row g-4">
-                    {% for member in team_members %}
-                        <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="{{ member.delay }}s">
+                    {% for chef in chefs %}
+                        <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.{{ loop.index }}s">
                             <div class="team-item text-center rounded overflow-hidden">
                                 <div class="rounded-circle overflow-hidden m-4">
-                                    <img class="img-fluid" src="{{ asset('assets/img/' ~ member.image) }}" alt="{{ member.name }}">
+                                    <img class="img-fluid" src="{{ asset('assets/img/' ~ chef.image) }}" alt="{{ chef.name }}">
                                 </div>
-                                <h5 class="mb-0">{{ member.name }}</h5>
-                                <small>{{ member.designation }}</small>
-                                <div class="d-flex justify-content-center mt-3">
-                                    <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                                    <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-twitter"></i></a>
-                                    <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-instagram"></i></a>
-                                </div>
+                                <h5 class="mb-3">{{ chef.name }}</h5>
+                                <small>{{ chef.position }}</small>
                             </div>
                         </div>
                     {% endfor %}
