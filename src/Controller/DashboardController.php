@@ -28,17 +28,22 @@ final class DashboardController extends AbstractController
         ]);
     }
 
-    #[Route('/', name: 'dashboard')]
+    #[Route('/', name: 'home')]
+public function index(): Response
+{
+    $user = $this->getUser();
 
-    public function index(): Response
-    {
-        
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->redirectToRoute('app_login');
+    if ($user) {
+        // Redirect based on role
+        if ($this->isGranted('ROLE_ADMIN')) {
+            return $this->redirectToRoute('admin_dashboard');
+        } else {
+            return $this->redirectToRoute('user_dashboard');
         }
-        return $this->render('dashboard/user_dashboard.html.twig', [
-            'user' => $user,
-        ]);
     }
+
+    // 👇 Render a public homepage if user not logged in
+    return $this->render('home/index.html.twig');
+}
+
 }
