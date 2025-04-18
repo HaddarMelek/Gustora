@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+        .header {
+            background-color: #FEA116;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .content {
+            padding: 20px;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>Gustora Restaurant</h1>
+        </div>
+        <div class="content">
+            <h2>Thank you for contacting us!</h2>
+            <p>Dear {{ name }},</p>
+            <p>We have received your message regarding "{{ subject }}".</p>
+            <p>Our team will review your inquiry and get back to you as soon as possible.</p>
+            <p>Best regards,<br>The Gustora Team</p>
+        </div>
+        <div class="footer">
+            <p>Gustora Restaurant - Cité El Amel 5, Gabes, Tunisia</p>
+            <p>Tel: +216 75 123 456 | Email: contact@gustora.com</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -11,13 +11,20 @@
     <p>Email - {{ user.email }}</p>
     <p>Phone Number - +{{ user.countryCode }} {{ user.phoneNumber }}</p>
 
-    <a href="{{ path('app_category_index') }}" class="btn btn-primary">
-        Manage Categories
-    </a>
-    <a href="{{ path('app_product_index') }}" class="btn btn-success">
-        <i class="fas fa-boxes me-2"></i> Manage Products
-    </a>
-    <a href="{{ path('app_logout') }}" class="btn btn-danger">Logout</a>
+    <div class="d-grid gap-3">
+        <a href="{{ path('app_category_index') }}" class="btn btn-primary">
+            <i class="fas fa-list me-2"></i> Manage Categories
+        </a>
+        <a href="{{ path('app_product_index') }}" class="btn btn-success">
+            <i class="fas fa-boxes me-2"></i> Manage Products
+        </a>
+        <a href="{{ path('admin_contact_messages') }}" class="btn btn-info">
+            <i class="fas fa-envelope me-2"></i> Contact Messages
+        </a>
+        <a href="{{ path('app_logout') }}" class="btn btn-danger">
+            <i class="fas fa-sign-out-alt me-2"></i> Logout
+        </a>
+    </div>
 {% endblock %}
 
 {% block javascripts %}

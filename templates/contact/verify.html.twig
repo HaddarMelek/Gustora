@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Verify Phone Number - Gustora{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title text-center mb-4">Verify Your Phone Number</h3>
+                    
+                    {% for message in app.flashes('error') %}
+                        <div class="alert alert-danger">{{ message }}</div>
+                    {% endfor %}
+
+                    <p>Please enter the verification code sent to {{ phone }}</p>
+                    
+                    <form method="post">
+                        <div class="form-group mb-3">
+                            <input type="text" name="otp" class="form-control" placeholder="Enter verification code" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Verify</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
