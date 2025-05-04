@@ -7,6 +7,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
@@ -43,9 +44,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(nullable: true)]
     private ?int $otpCode = null;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Cart::class, orphanRemoval: true)]
+    private Collection $carts;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Order::class)]
+    private Collection $orders;
+
     public function __construct()
     {
         $this->roles = new ArrayCollection();
+        $this->carts = new ArrayCollection();
+        $this->orders = new ArrayCollection();
     }
 
     public function getCountryCode(): string
@@ -180,5 +189,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeRole(Role $role): void
     {
         $this->roles->removeElement($role);
+    }
+
+    public function getCarts(): Collection
+    {
+        return $this->carts;
+    }
+
+    public function getOrders(): Collection
+    {
+        return $this->orders;
     }
 }
