@@ -29,6 +29,12 @@ class CartController extends AbstractController
             throw $this->createNotFoundException('Product not found');
         }
 
+        // Check if product is in stock
+        if ($product->getStock() <= 0) {
+            $this->addFlash('error', 'Sorry, this product is out of stock!');
+            return $this->redirectToRoute('app_products_public');
+        }
+
         $cart = $cartRepository->findOneBy(['user' => $this->getUser()]) 
             ?? (new Cart())->setUser($this->getUser());
 
@@ -36,8 +42,17 @@ class CartController extends AbstractController
             fn($item) => $item->getProduct() === $product
         )->first() ?: false;
 
+        // Calculate new quantity
+        $newQuantity = $cartItem ? $cartItem->getQuantity() + 1 : 1;
+
+        // Check if new quantity exceeds stock
+        if ($newQuantity > $product->getStock()) {
+            $this->addFlash('error', 'Sorry, only ' . $product->getStock() . ' items available in stock!');
+            return $this->redirectToRoute('app_products_public');
+        }
+
         if ($cartItem) {
-            $cartItem->setQuantity($cartItem->getQuantity() + 1);
+            $cartItem->setQuantity($newQuantity);
         } else {
             $cartItem = new CartItem();
             $cartItem->setProduct($product)
@@ -69,8 +84,14 @@ class CartController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager
     ): Response {
-        $quantity = $request->request->get('quantity', 1);
+        $quantity = (int) $request->request->get('quantity', 1);
         
+        // Check stock availability
+        if ($quantity > $cartItem->getProduct()->getStock()) {
+            $this->addFlash('error', 'Sorry, only ' . $cartItem->getProduct()->getStock() . ' items available in stock!');
+            return $this->redirectToRoute('app_cart_show');
+        }
+
         if ($quantity < 1) {
             $entityManager->remove($cartItem);
         } else {

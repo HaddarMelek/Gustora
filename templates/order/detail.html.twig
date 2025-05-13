@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Order #{{ order.id }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="mb-4">
+        <a href="{{ path('app_user_orders') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Orders
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2>Order #{{ order.id }}</h2>
+            <p class="mb-0">
+                Placed on {{ order.createdAt|date('Y-m-d H:i:s') }}
+            </p>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th class="text-end">Price</th>
+                            <th class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order.items %}
+                            <tr>
+                                <td>{{ item.product.name }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td class="text-end">{{ item.price|number_format(2) }} TND</td>
+                                <td class="text-end">{{ (item.price * item.quantity)|number_format(2) }} TND</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                            <td class="text-end"><strong>{{ order.totalAmount|number_format(2) }} TND</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <a href="{{ path('app_invoice_download', {'id': order.id}) }}" 
+               class="btn btn-primary">
+                <i class="fas fa-download"></i> Download Invoice
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

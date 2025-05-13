@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <h1 style="color: #28a745; text-align: center;">Thank You for Your Order!</h1>
+    
+    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 5px; margin: 20px 0;">
+        <p>Dear {{ order.user.email }},</p>
+        
+        <p>We are pleased to confirm that we have received your order #{{ order.id }}. Your order will be delivered within the next 2 hours.</p>
+        
+        <h3>Order Details:</h3>
+        <ul style="list-style: none; padding: 0;">
+            <li><strong>Order Number:</strong> #{{ order.id }}</li>
+            <li><strong>Date:</strong> {{ order.createdAt|date('Y-m-d H:i:s') }}</li>
+            <li><strong>Total Amount:</strong> {{ order.totalAmount|number_format(2) }} TND</li>
+            <li><strong>Payment Method:</strong> {{ order.paymentMethod }}</li>
+        </ul>
+
+        <p>Your invoice is attached to this email as a PDF document.</p>
+        
+        <p>If you have any questions about your order, please don't hesitate to contact us.</p>
+    </div>
+
+    <div style="text-align: center; margin-top: 20px; color: #6c757d;">
+        <p>Best regards,<br>The Gustora Team</p>
+    </div>
+</div>
+{% endblock %}

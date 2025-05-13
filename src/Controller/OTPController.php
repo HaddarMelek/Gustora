@@ -48,7 +48,6 @@ class OTPController extends AbstractController
                 throw new \Exception('User not found');
             }
 
-            // Ensure proper phone number formatting
             $phoneNumber = $user->getCountryCode() . $user->getPhoneNumber();
             error_log('Verifying OTP for phone: ' . $phoneNumber); // Debug log
             

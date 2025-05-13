@@ -32,11 +32,14 @@ class Order
     #[ORM\Column]
     private float $totalAmount = 0.0;
 
-    #[ORM\OneToMany(mappedBy: 'order', targetEntity: OrderItem::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'order', targetEntity: OrderItem::class, orphanRemoval: true, cascade: ['persist'])]
     private Collection $items;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column(length: 50)]
+    private ?string $paymentMethod = null;
 
     public function __construct()
     {
@@ -76,7 +79,7 @@ class Order
         ])) {
             throw new \InvalidArgumentException('Invalid status');
         }
-        
+
         $this->status = $status;
         return $this;
     }
@@ -121,6 +124,17 @@ class Order
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
+    }
+
+    public function getPaymentMethod(): ?string
+    {
+        return $this->paymentMethod;
+    }
+
+    public function setPaymentMethod(string $paymentMethod): self
+    {
+        $this->paymentMethod = $paymentMethod;
+        return $this;
     }
 
     private function updateTotalAmount(): void
