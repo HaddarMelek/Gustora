@@ -29,22 +29,50 @@
             font-size: 2.5rem;
             margin-bottom: 2rem;
         }
+
+        .password-field {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            color: #6c757d;
+            z-index: 10;
+        }
+
+        .password-toggle:hover {
+            color: #495057;
+        }
+
+        .password-toggle i {
+            font-size: 1.2rem;
+        }
+
+        .password-field .form-control {
+            padding-right: 40px;
+            width: 100%;
+        }
     </style>
 {% endblock %}
 
 {% block body %}
     <div class="container-xxl bg-white p-0">
-        <!-- Spinner Start -->
         <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
             <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
                 <span class="sr-only">Loading...</span>
             </div>
         </div>
-        <!-- Spinner End -->
 
-        <!-- Navbar Start -->
         {% include 'partials/_navbar.html.twig' %}
-        <!-- Navbar End -->
 
         <div class="register-container d-flex align-items-center">
             <div class="form-container">
@@ -53,31 +81,67 @@
                 {% endfor %}
 
                 <h1 class="text-center">Create Your Account</h1>
-                {{ form_start(registrationForm) }}
+                {{ form_start(registrationForm, {'attr': {'id': 'registration-form'}}) }}
                     <div class="mb-3">
                         {{ form_label(registrationForm.email) }}
                         {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control'}}) }}
+                        <div class="invalid-feedback">
+                            {{ form_errors(registrationForm.email) }}
+                        </div>
                     </div>
 
                     <div class="mb-3">
                         {{ form_label(registrationForm.countryCode) }}
                         {{ form_widget(registrationForm.countryCode, {'attr': {'class': 'form-control'}}) }}
+                        <div class="invalid-feedback">
+                            {{ form_errors(registrationForm.countryCode) }}
+                        </div>
                     </div>
 
                     <div class="mb-3">
                         {{ form_label(registrationForm.phoneNumber) }}
                         {{ form_widget(registrationForm.phoneNumber, {'attr': {'class': 'form-control'}}) }}
+                        <div class="invalid-feedback">
+                            {{ form_errors(registrationForm.phoneNumber) }}
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        {{ form_label(registrationForm.plainPassword.first) }}
-                        {{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': 'form-control'}}) }}
-                    </div>
+             <div class="mb-3">
+    {{ form_label(registrationForm.plainPassword.first) }}
+    <div class="password-field">
+        {{ form_widget(registrationForm.plainPassword.first, {
+            'attr': {
+                'class': 'form-control',
+                'id': 'password-first'
+            }
+        }) }}
+        <button type="button" class="password-toggle">
+            <i class="fas fa-eye" data-target="password-first"></i>
+        </button>
+    </div>
+    <div class="invalid-feedback">
+        {{ form_errors(registrationForm.plainPassword.first) }}
+    </div>
+</div>
 
-                    <div class="mb-3">
-                        {{ form_label(registrationForm.plainPassword.second) }}
-                        {{ form_widget(registrationForm.plainPassword.second, {'attr': {'class': 'form-control'}}) }}
-                    </div>
+<div class="mb-3">
+    {{ form_label(registrationForm.plainPassword.second) }}
+    <div class="password-field">
+        {{ form_widget(registrationForm.plainPassword.second, {
+            'attr': {
+                'class': 'form-control',
+                'id': 'password-second'
+            }
+        }) }}
+        <button type="button" class="password-toggle">
+            <i class="fas fa-eye" data-target="password-second"></i>
+        </button>
+    </div>
+    <div class="invalid-feedback">
+        {{ form_errors(registrationForm.plainPassword.second) }}
+    </div>
+</div>
+
 
                     <div class="mb-3 form-check">
                         {{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'form-check-input'}}) }}
@@ -85,10 +149,35 @@
                     </div>
 
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary py-3">Register</button>
+                        <button type="submit" class="btn btn-primary py-3" id="register-button">Register</button>
                         <a href="{{ path('app_login') }}" class="btn btn-outline-primary py-3">Already have an account?</a>
                     </div>
                 {{ form_end(registrationForm) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="otpModal" tabindex="-1" data-bs-backdrop="static" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Verify Your Phone Number</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="otp-input" class="form-label">Enter 6-digit verification code</label>
+                        <input type="text" class="form-control" id="otp-input" maxlength="6" 
+                               pattern="\d*" inputmode="numeric" autocomplete="off"/>
+                        <div class="form-text">We've sent a verification code to your phone</div>
+                        <div class="invalid-feedback" id="otp-error"></div>
+                    </div>
+                    <button type="button" class="btn btn-link" id="resend-otp">Resend Code</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="verify-otp" disabled>
+                        Verify Code
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -96,4 +185,108 @@
 
 {% block javascripts %}
     {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('registration-form');
+            const otpModal = new bootstrap.Modal(document.getElementById('otpModal'));
+            const otpInput = document.getElementById('otp-input');
+            const verifyButton = document.getElementById('verify-otp');
+            const otpError = document.getElementById('otp-error');
+            
+            // Handle registration form submission
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                clearErrors();
+                
+                try {
+                    const response = await fetch('{{ path("app_register") }}', {
+                        method: 'POST',
+                        body: new FormData(form)
+                    });
+
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Show OTP modal
+                        otpModal.show();
+                        showMessage('success', data.message);
+                    } else {
+                        showMessage('error', data.message);
+                    }
+                } catch (error) {
+                    showMessage('error', 'An error occurred. Please try again.');
+                }
+            });
+
+            // Enable/disable verify button based on OTP length
+            otpInput.addEventListener('input', function() {
+                const value = this.value.trim();
+                verifyButton.disabled = value.length !== 6 || !/^\d+$/.test(value);
+                otpError.style.display = 'none';
+            });
+
+            // Handle OTP verification
+            verifyButton.addEventListener('click', async function() {
+                try {
+                    const response = await fetch('{{ path("app_verify_registration_otp") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `otp=${otpInput.value}`
+                    });
+
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        showMessage('success', 'Registration successful! Redirecting...');
+                        setTimeout(() => {
+                            window.location.href = data.redirect;
+                        }, 1500);
+                    } else {
+                        otpError.textContent = data.message;
+                        otpError.style.display = 'block';
+                    }
+                } catch (error) {
+                    otpError.textContent = 'Failed to verify OTP. Please try again.';
+                    otpError.style.display = 'block';
+                }
+            });
+
+            // Handle resend OTP
+            document.getElementById('resend-otp').addEventListener('click', async function() {
+                try {
+                    const response = await fetch('{{ path("app_resend_registration_otp") }}', {
+                        method: 'POST'
+                    });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        showMessage('success', 'New verification code sent!');
+                        otpInput.value = '';
+                        verifyButton.disabled = true;
+                    } else {
+                        showMessage('error', data.message);
+                    }
+                } catch (error) {
+                    showMessage('error', 'Failed to resend code. Please try again.');
+                }
+            });
+
+            function showMessage(type, message) {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} mt-3`;
+                alertDiv.textContent = message;
+                form.insertAdjacentElement('beforebegin', alertDiv);
+
+                // Auto-remove after 5 seconds
+                setTimeout(() => alertDiv.remove(), 5000);
+            }
+
+            function clearErrors() {
+                document.querySelectorAll('.alert').forEach(el => el.remove());
+                otpError.style.display = 'none';
+            }
+        });
+    </script>
 {% endblock %}

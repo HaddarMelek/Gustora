@@ -19,23 +19,7 @@ final class DashboardController extends AbstractController
     {
         $user = $this->getUser();
         
-        // Récupérer la session depuis la requête
-        $session = $request->getSession();
-
-        // Vérifier s’il y a un message flash 'contact_form_submitted'
-        if ($session->getFlashBag()->has('contact_form_submitted')) {
-            $contactData = $session->get('contact_data');
-
-            // Envoyer un OTP si le numéro de téléphone est présent
-            if (isset($contactData['phone'])) {
-                try {
-                    $this->otpService->generateOTP($contactData['phone']);
-                    $this->addFlash('info', 'A verification code has been sent to your phone.');
-                } catch (\Exception $e) {
-                    $this->addFlash('error', 'Could not send verification code.');
-                }
-            }
-        }
+       
 
         return $this->render('dashboard/admin_dashboard.html.twig', [
             'user' => $user,

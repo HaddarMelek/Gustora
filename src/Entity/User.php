@@ -8,6 +8,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
@@ -20,26 +21,38 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
+    #[Assert\Email(
+        message: 'The email {{ value }} is not a valid email.',
+    )]
     private ?string $email = null;
 
-    /**
-     * @var array<string> The user roles
-     */
     #[ORM\ManyToMany(targetEntity: Role::class)]
     #[ORM\JoinTable(name: 'user_roles')]
     private $roles;
 
-    /**
-     * @var string The hashed password
-     */
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\Column]
-    private string $countryCode;
+    #[Assert\NotBlank(message: 'Please enter a password')]
+    #[Assert\Length(
+        min: 6,
+        minMessage: 'Your password should be at least {{ limit }} characters'
+    )]
+    private ?string $plainPassword = null;
 
     #[ORM\Column]
-    private string $phoneNumber;
+    #[Assert\Regex(
+        pattern: '/^\+\d{2,3}$/',
+        message: 'Country code must start with + followed by 2 or 3 digits'
+    )]
+    private ?string $countryCode = null;
+
+    #[ORM\Column]
+    #[Assert\Regex(
+        pattern: '/^\d{8}$/',
+        message: 'Phone number must be exactly 8 digits'
+    )]
+    private ?string $phoneNumber = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $otpCode = null;
@@ -52,6 +65,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToOne(mappedBy: 'user', targetEntity: Cart::class, cascade: ['persist', 'remove'])]
     private ?Cart $cart = null;
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $isVerified = false;
 
     public function __construct()
     {
@@ -93,9 +109,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEmail(string $email): static
     {
         $this->email = $email;
-
         return $this;
     }
+
     public function getOtpCode(): ?int
     {
         return $this->otpCode;
@@ -104,25 +120,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setOtpCode(?int $otpCode): self
     {
         $this->otpCode = $otpCode;
-
         return $this;
     }
 
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
     }
 
-    /**
-     * @see UserInterface
-     *
-     * @return array<string>
-     */
     public function getRoles(): array
     {
         $roles = $this->roles->map(function ($role) {
@@ -134,20 +139,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return array_unique($roles);
     }
 
-
-    /**
-     * @param array<string> $roles
-     */
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
-
         return $this;
     }
 
-    /**
-     * @see PasswordAuthenticatedUserInterface
-     */
     public function getPassword(): ?string
     {
         return $this->password;
@@ -156,29 +153,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): static
     {
         $this->password = $password;
-
         return $this;
     }
 
-    /**
-     * @see UserInterface
-     */
-    public function eraseCredentials(): void
+    public function getPlainPassword(): ?string
     {
-
+        return $this->plainPassword;
     }
 
-    /**
-     * @return ArrayCollection<int, Role>
-     */
+    public function setPlainPassword(?string $plainPassword): void
+    {
+        $this->plainPassword = $plainPassword;
+    }
+
+    public function eraseCredentials(): void
+    {
+    }
+
     public function getRolesCollection(): ArrayCollection
     {
         return $this->roles;
     }
 
-    /**
-     * @param Role $role
-     */
     public function addRole(Role $role): void
     {
         if (!$this->roles->contains($role)) {
@@ -186,9 +182,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
     }
 
-    /**
-     * @param Role $role
-     */
     public function removeRole(Role $role): void
     {
         $this->roles->removeElement($role);
@@ -212,7 +205,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCart(?Cart $cart): self
     {
         $this->cart = $cart;
+        return $this;
+    }
 
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): self
+    {
+        $this->isVerified = $isVerified;
         return $this;
     }
 }

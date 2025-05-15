@@ -54,15 +54,7 @@ class ContactController extends AbstractController
             // Add flash message
             $this->addFlash('contact_form_submitted', true);
 
-            // Send verification code if phone is provided
-            if ($contact->getPhone()) {
-                try {
-                    $this->otpService->generateOTP($contact->getPhone());
-                    return $this->redirectToRoute('app_verify_contact');
-                } catch (\Exception $e) {
-                    $this->addFlash('error', 'Could not send verification code.');
-                }
-            }
+            
 
             $this->addFlash('success', 'Your message has been sent successfully!');
             return $this->redirectToRoute('app_contact');
