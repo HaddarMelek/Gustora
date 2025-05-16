@@ -1,87 +1,106 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <a href="{{ path('user_dashboard') }}" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
-        </a>
-        <p class="mb-0 text-muted">
-            Page {{ pagination.currentPageNumber }} of {{ pagination.pageCount }}
-        </p>
-    </div>
-    
-<div class="container">
-        <div class="row mt-4">
-            <div class="col-md-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Filters</h5>
-                        <form method="GET" action="{{ path('app_products_public') }}">
-                            <div class="mb-3">
-                                <label for="category" class="form-label">Category</label>
-                                <select class="form-select" id="category" name="category">
-                                    <option value="">All Categories</option>
-                                    {% for cat in categories %}
-                                        <option value="{{ cat.id }}" {% if cat.id == selectedCategory %}selected{% endif %}>
-                                            {{ cat.name }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
+    <div class="container-xxl bg-white p-0">
+        <div class="container-xxl position-relative p-0">
+            {% include 'partials/_client_navbar.html.twig' %}
+            <div class="container-xxl py-5 bg-dark hero-header mb-5">
+                <div class="container text-center my-5 pt-5 pb-4">
+                    <h1 class="display-3 text-white mb-3 animated slideInDown">All Products</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center text-uppercase">
+                            <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Home</a></li>
+                            <li class="breadcrumb-item text-white active" aria-current="page">Products</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mt-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <a href="{{ path('user_dashboard') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+                </a>
+                <p class="mb-0 text-muted">
+                    Page {{ pagination.currentPageNumber }} of {{ pagination.pageCount }}
+                </p>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Filters</h5>
+                            <form method="GET" action="{{ path('app_products_public') }}">
+                                <div class="mb-3">
+                                    <label for="category" class="form-label">Category</label>
+                                    <select class="form-select" id="category" name="category">
+                                        <option value="">All Categories</option>
+                                        {% for cat in categories %}
+                                            <option value="{{ cat.id }}" {% if cat.id == selectedCategory %}selected{% endif %}>
+                                                {{ cat.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="minPrice" class="form-label">Min Price</label>
+                                    <input type="number" class="form-control" id="minPrice" name="minPrice" value="{{ selectedMinPrice }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="maxPrice" class="form-label">Max Price</label>
+                                    <input type="number" class="form-control" id="maxPrice" name="maxPrice" value="{{ selectedMaxPrice }}">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Apply Filters</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-9">
+                    <div class="row">
+                        {% for product in pagination %}
+                            <div class="col-md-4 mb-4">
+                                <div class="card h-100 shadow-sm product-card">
+                                    {% if product.image %}
+                                        <img src="{{ vich_uploader_asset(product, 'imageFile') }}" class="card-img-top product-img" alt="{{ product.name }}">
+                                    {% endif %}
+                                    <div class="card-body d-flex flex-column">
+                                        <h5 class="card-title text-center">{{ product.name }}</h5>
+                                        <p class="card-text text-muted text-center mb-3">Price: {{ product.price }} TND</p>
+                                        <div class="d-flex gap-2">
+                                            {% if is_granted('ROLE_USER') %}
+                                                <a href="{{ path('app_public_product_show', {'id': product.id}) }}" class="btn btn-outline-primary flex-grow-1">View Details</a>
+                                                <form action="{{ path('app_cart_add', {'id': product.id}) }}" method="POST" class="flex-grow-1">
+                                                    <button type="submit" class="btn btn-success w-100">
+                                                        <i class="fas fa-cart-plus"></i> Add to Cart
+                                                    </button>
+                                                </form>
+                                            {% else %}
+                                                <a href="{{ path('app_login') }}" class="btn btn-primary flex-grow-1">
+                                                    <i class="fas fa-sign-in-alt"></i> Login to Order
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label for="minPrice" class="form-label">Min Price</label>
-                                <input type="number" class="form-control" id="minPrice" name="minPrice" value="{{ selectedMinPrice }}">
+                        {% else %}
+                            <div class="col-12 text-center">
+                                <p class="text-muted">No dishes available at the moment.</p>
                             </div>
-                            <div class="mb-3">
-                                <label for="maxPrice" class="form-label">Max Price</label>
-                                <input type="number" class="form-control" id="maxPrice" name="maxPrice" value="{{ selectedMaxPrice }}">
-                            </div>
-                            <button type="submit" class="btn btn-primary">Apply Filters</button>
-                        </form>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
 
-    <div class="col-md-9">
-        <div class="row">
-            {% for product in pagination %}
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100 shadow-sm product-card">
-                        {% if product.image %}
-                            <img src="{{ vich_uploader_asset(product, 'imageFile') }}" class="card-img-top product-img" alt="{{ product.name }}">
-                           {% endif %}
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title text-center">{{ product.name }}</h5>
-                            <p class="card-text text-muted text-center mb-3">Price: {{ product.price }} TND</p>
-                            <div class="d-flex gap-2">
-                             {% if is_granted('ROLE_USER') %}
-                                <a href="{{ path('app_public_product_show', {'id': product.id}) }}" 
-                                   class="btn btn-outline-primary flex-grow-1">View Details</a>
-                               
-                                    <form action="{{ path('app_cart_add', {'id': product.id}) }}" method="POST" class="flex-grow-1">
-                                        <button type="submit" class="btn btn-success w-100">
-                                            <i class="fas fa-cart-plus"></i> Add to Cart
-                                        </button>
-                                    </form>
-                                {% else %}
-                                    <a href="{{ path('app_login') }}" class="btn btn-primary flex-grow-1">
-                                        <i class="fas fa-sign-in-alt"></i> Login to Order
-                                    </a>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% else %}
-                <div class="col-12 text-center">
-                    <p class="text-muted">No dishes available at the moment.</p>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-    </div>
-     <nav aria-label="Page navigation" class="mt-4">
+            <nav aria-label="Page navigation" class="mt-4">
                 {{ knp_pagination_render(pagination) }}
-    </nav>
+            </nav>
+        </div>
+
+        {% include 'partials/_footer.html.twig' %}
+        <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+    </div>
 {% endblock %}
