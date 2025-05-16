@@ -1,0 +1,30 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 px-lg-5 py-3 py-lg-0">
+    <a href="{{ path('app_home') }}" class="navbar-brand p-0">
+        <h1 class="text-primary m-0"><i class="fa fa-utensils me-3"></i>Gustora</h1>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+        <span class="fa fa-bars"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+        <div class="navbar-nav ms-auto py-0 pe-4">
+            <a href="{{ path('app_home') }}" class="nav-item nav-link">
+                <i class="fas fa-home me-2"></i>Home
+            </a>
+            <a href="{{ path('app_cart_show') }}" class="nav-item nav-link {% if app.request.get('_route') == 'app_cart_show' %}active{% endif %}">
+                <i class="fas fa-shopping-cart me-2"></i>Cart
+                {% if app.user.cart and app.user.cart.items|length > 0 %}
+                    <span class="badge bg-primary">{{ app.user.cart.items|length }}</span>
+                {% endif %}
+            </a>
+            <a href="{{ path('app_user_orders') }}" class="nav-item nav-link">
+                <i class="fas fa-list me-2"></i>Orders
+            </a>
+            <a href="{{ path('app_user_profile') }}" class="nav-item nav-link {% if app.request.get('_route') == 'app_user_profile' %}active{% endif %}">
+                <i class="fas fa-user me-2"></i>Profile
+            </a>
+        </div>
+        <a href="{{ path('app_logout') }}" class="btn btn-primary py-2 px-4">
+            <i class="fas fa-sign-out-alt me-2"></i>Logout
+        </a>
+    </div>
+</nav>

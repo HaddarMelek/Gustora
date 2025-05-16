@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}My Profile - Gustora{% endblock %}
+
+{% block body %}
+<div class="container-xxl bg-white p-0">
+    <!-- Spinner Start -->
+    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Navbar & Hero Start -->
+    <div class="container-xxl position-relative p-0">
+        {% include 'partials/_client_navbar.html.twig' %}
+
+        <div class="container-xxl py-5 bg-dark hero-header mb-5">
+            <div class="container text-center my-5 pt-5 pb-4">
+                <h1 class="display-3 text-white mb-3 animated slideInDown">My Profile</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb justify-content-center text-uppercase">
+                        <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Home</a></li>
+                        <li class="breadcrumb-item text-white active" aria-current="page">Profile</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Form Start -->
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="row g-4 justify-content-center">
+                <div class="col-lg-6">
+                    <div class="bg-light rounded p-4">
+                        <h5 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Update Profile</h5>
+                        
+                        {% for label, messages in app.flashes %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+
+                        {{ form_start(form, {'attr': {'class': 'needs-validation'}}) }}
+                            <div class="mb-3">
+                                {{ form_label(form.email, 'Email Address', {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.email) }}
+                                {{ form_errors(form.email) }}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form_label(form.countryCode, 'Country Code', {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.countryCode, {'attr': {'placeholder': '+216'}}) }}
+                                {{ form_errors(form.countryCode) }}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form_label(form.phoneNumber, 'Phone Number', {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.phoneNumber, {'attr': {'placeholder': '12345678'}}) }}
+                                {{ form_errors(form.phoneNumber) }}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form_label(form.plainPassword, null, {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.plainPassword) }}
+                                <small class="form-text text-muted">{{ form_help(form.plainPassword) }}</small>
+                                {{ form_errors(form.plainPassword) }}
+                            </div>
+
+                            <button type="submit" class="btn btn-primary py-3 w-100">
+                                <i class="fas fa-save me-2"></i>Update Profile
+                            </button>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Start -->
+    {% include 'partials/_footer.html.twig' %}
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        window.addEventListener('load', function() {
+            document.querySelector('#spinner').classList.remove('show');
+        });
+    </script>
+{% endblock %}

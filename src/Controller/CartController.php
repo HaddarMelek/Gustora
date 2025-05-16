@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 #[IsGranted('ROLE_USER')]
 class CartController extends AbstractController
@@ -78,28 +79,44 @@ class CartController extends AbstractController
         ]);
     }
 
-    #[Route('/cart/update/{id}', name: 'app_cart_update', methods: ['POST'])]
+    #[Route('/cart/update/{id}', name: 'app_cart_update_quantity', methods: ['POST'])]
     public function updateQuantity(
-        CartItem $cartItem,
         Request $request,
-        EntityManagerInterface $entityManager
-    ): Response {
-        $quantity = (int) $request->request->get('quantity', 1);
+        CartItem $cartItem,
+        EntityManagerInterface $em
+    ): JsonResponse {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         
-        // Check stock availability
-        if ($quantity > $cartItem->getProduct()->getStock()) {
-            $this->addFlash('error', 'Sorry, only ' . $cartItem->getProduct()->getStock() . ' items available in stock!');
-            return $this->redirectToRoute('app_cart_show');
+        try {
+            $data = json_decode($request->getContent(), true);
+            $newQuantity = (int) $data['quantity'];
+            
+            // Validate quantity
+            if ($newQuantity <= 0) {
+                throw new \InvalidArgumentException('Quantity must be greater than 0');
+            }
+            
+            if ($newQuantity > $cartItem->getProduct()->getStock()) {
+                throw new \InvalidArgumentException('Not enough items in stock');
+            }
+            
+            // Update quantity
+            $cartItem->setQuantity($newQuantity);
+            $em->flush();
+            
+            // Return updated cart total
+            return $this->json([
+                'success' => true,
+                'newTotal' => $cartItem->getCart()->getTotal(),
+                'message' => 'Quantity updated successfully'
+            ]);
+            
+        } catch (\Exception $e) {
+            return $this->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 400);
         }
-
-        if ($quantity < 1) {
-            $entityManager->remove($cartItem);
-        } else {
-            $cartItem->setQuantity($quantity);
-        }
-        
-        $entityManager->flush();
-        return $this->redirectToRoute('app_cart_show');
     }
 
     #[Route('/cart/remove/{id}', name: 'app_cart_remove', methods: ['POST'])]

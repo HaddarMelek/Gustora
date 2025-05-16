@@ -1,75 +1,170 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Validate Cart{% endblock %}
+{% block title %}Validate Order - Gustora{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Custom select styling */
+        .form-select {
+            cursor: pointer;
+        }
+
+        .form-select option {
+            padding: 10px;
+        }
+
+        /* Style for options on hover and when selected */
+        .form-select option:hover,
+        .form-select option:focus,
+        .form-select option:active,
+        .form-select option:checked {
+            background: #FEA116 !important;
+            background-color: #FEA116 !important;
+            color: #fff !important;
+        }
+
+        /* Style for when dropdown is open */
+        .form-select:focus {
+            border-color: #FEA116;
+            box-shadow: 0 0 0 0.25rem rgba(254, 161, 22, 0.25);
+        }
+
+        /* Style for selected option */
+        .form-select option:checked {
+            background-color: #FEA116 !important;
+            color: #fff !important;
+        }
+
+        /* Firefox specific styling */
+        @-moz-document url-prefix() {
+            .form-select option:checked {
+                background-color: #FEA116 !important;
+                color: #fff !important;
+                box-shadow: 0 0 10px 100px #FEA116 inset !important;
+            }
+        }
+
+        /* WebKit specific styling */
+        .form-select option:hover {
+            background-color: #FEA116 !important;
+            color: #fff !important;
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
-<div class="container mt-4">
-    <h1>Order Summary</h1>
+<div class="container-xxl bg-white p-0">
+    <!-- Spinner Start -->
+    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
 
-    <div class="row">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title mb-4">Items in your cart</h5>
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Product</th>
-                                    <th>Quantity</th>
-                                    <th class="text-end">Price</th>
-                                    <th class="text-end">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for item in cart.items %}
+    <!-- Navbar & Hero Start -->
+    <div class="container-xxl position-relative p-0">
+        {% include 'partials/_client_navbar.html.twig' %}
+
+        <div class="container-xxl py-5 bg-dark hero-header mb-5">
+            <div class="container text-center my-5 pt-5 pb-4">
+                <h1 class="display-3 text-white mb-3 animated slideInDown">Order Summary</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb justify-content-center text-uppercase">
+                        <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{{ path('app_cart_show') }}">Cart</a></li>
+                        <li class="breadcrumb-item text-white active" aria-current="page">Validate</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Summary Start -->
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="bg-light rounded p-4 mb-4">
+                        <h5 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Items in your cart</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
                                     <tr>
-                                        <td>{{ item.product.name }}</td>
-                                        <td>{{ item.quantity }}</td>
-                                        <td class="text-end">{{ item.product.price }} TND</td>
-                                        <td class="text-end">{{ (item.product.price * item.quantity)|number_format(2) }} TND</td>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th class="text-end">Price</th>
+                                        <th class="text-end">Total</th>
                                     </tr>
-                                {% endfor %}
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
-                                    <td class="text-end"><strong>{{ total|number_format(2) }} TND</strong></td>
-                                </tr>
-                            </tfoot>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {% for item in cart.items %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img src="{{ asset('uploads/products/' ~ item.product.image) }}" 
+                                                         alt="{{ item.product.name }}" 
+                                                         class="img-fluid rounded me-3"
+                                                         style="width: 60px; height: 60px; object-fit: cover;">
+                                                    <span>{{ item.product.name }}</span>
+                                                </div>
+                                            </td>
+                                            <td>{{ item.quantity }}</td>
+                                            <td class="text-end">{{ item.product.price }} TND</td>
+                                            <td class="text-end">{{ (item.product.price * item.quantity)|number_format(2) }} TND</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot class="table-light">
+                                    <tr>
+                                        <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                        <td class="text-end"><strong>{{ total|number_format(2) }} TND</strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="bg-light rounded p-4">
+                        <h5 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Payment Details</h5>
+                        <form action="{{ path('app_order_create') }}" method="POST">
+                            <div class="mb-4">
+                                <label for="paymentMethod" class="form-label">Payment Method</label>
+                                <select class="form-select py-3" id="paymentMethod" name="paymentMethod" required>
+                                    <option value="">Choose payment method...</option>
+                                    <option value="cash">Cash on Delivery</option>
+                                    <option value="card">Credit Card</option>
+                                </select>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary py-3">
+                                    <i class="fas fa-lock me-2"></i> Place Order
+                                </button>
+                                <a href="{{ path('app_cart_show') }}" class="btn btn-outline-secondary py-3">
+                                    <i class="fas fa-arrow-left me-2"></i> Back to Cart
+                                </a>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title mb-4">Payment Details</h5>
-                    <form action="{{ path('app_order_create') }}" method="POST">
-                        <div class="mb-3">
-                            <label for="paymentMethod" class="form-label">Payment Method</label>
-                            <select class="form-select" id="paymentMethod" name="paymentMethod" required>
-                                <option value="">Choose...</option>
-                                <option value="cash">Cash on Delivery</option>
-                                <option value="card">Credit Card</option>
-                            </select>
-                        </div>
-
-                        <button type="submit" class="btn btn-success w-100">
-                            <i class="fas fa-lock"></i> Place Order
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <div class="d-grid gap-2 mt-3">
-                <a href="{{ path('app_cart_show') }}" class="btn btn-outline-secondary">
-                    <i class="fas fa-arrow-left"></i> Back to Cart
-                </a>
-            </div>
-        </div>
     </div>
+
+    <!-- Footer Start -->
+    {% include 'partials/_footer.html.twig' %}
 </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Remove spinner after page load
+        window.addEventListener('load', function() {
+            document.querySelector('#spinner').classList.remove('show');
+        });
+    </script>
 {% endblock %}

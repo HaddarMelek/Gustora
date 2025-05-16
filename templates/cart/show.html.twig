@@ -1,81 +1,177 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Your Cart{% endblock %}
+{% block title %}Your Cart - Gustora{% endblock %}
 
 {% block body %}
-<div class="container mt-4">
-    <h1>Your Shopping Cart</h1>
-
-    {% if cart and cart.items|length > 0 %}
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Price</th>
-                        <th>Quantity</th>
-                        <th>Total</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in cart.items %}
-                        <tr>
-                            <td>{{ item.product.name }}</td>
-                            <td>{{ item.product.price }} TND</td>
-                            <td>
-                                <form action="{{ path('app_cart_update', {'id': item.id}) }}" 
-                                      method="POST" 
-                                      class="d-flex align-items-center gap-2">
-                                    <input type="number" 
-                                           name="quantity" 
-                                           value="{{ item.quantity }}" 
-                                           min="1" 
-                                           class="form-control" 
-                                           style="width: 80px"
-                                           onchange="this.form.submit()">
-                                </form>
-                            </td>
-                            <td>{{ (item.product.price * item.quantity)|number_format(2) }} TND</td>
-                            <td>
-                                <form action="{{ path('app_cart_remove', {'id': item.id}) }}" 
-                                      method="POST" 
-                                      onsubmit="return confirm('Are you sure you want to remove this item?')"
-                                      class="d-inline">
-                                    <button type="submit" class="btn btn-danger btn-lg px-4">
-                                        <i class="fas fa-trash me-2"></i> Delete
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-                <tfoot>
-                    <tr class="table-active">
-                        <td colspan="3" class="text-end"><strong>Total:</strong></td>
-                        <td><strong>{{ cart.total|number_format(2) }} TND</strong></td>
-                        <td></td>
-                    </tr>
-                </tfoot>
-            </table>
+<div class="container-xxl bg-white p-0">
+    <!-- Spinner Start -->
+    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
         </div>
+    </div>
 
-        <div class="d-flex justify-content-between mt-4">
-            <form action="{{ path('app_cart_clear') }}" method="POST" 
-                  onsubmit="return confirm('Empty your cart?')">
-                <button type="submit" class="btn btn-outline-danger">
-                    <i class="fas fa-trash-alt"></i> Empty Cart
-                </button>
-            </form>
+    <!-- Navbar & Hero Start -->
+    <div class="container-xxl position-relative p-0">
+        {% include 'partials/_client_navbar.html.twig' %}
 
-            <a href="{{ path('app_validate_cart') }}" class="btn btn-success">
-                <i class="fas fa-check"></i> Validate Cart
-            </a>
+        <div class="container-xxl py-5 bg-dark hero-header mb-5">
+            <div class="container text-center my-5 pt-5 pb-4">
+                <h1 class="display-3 text-white mb-3 animated slideInDown">Your Cart</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb justify-content-center text-uppercase">
+                        <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Home</a></li>
+                        <li class="breadcrumb-item text-white active" aria-current="page">Cart</li>
+                    </ol>
+                </nav>
+            </div>
         </div>
-    {% else %}
-        <div class="alert alert-info">
-            Your cart is empty. <a href="{{ path('app_products_public') }}">Continue shopping</a>
+    </div>
+
+    <!-- Cart Start -->
+    <div class="container-xxl py-5">
+        <div class="container">
+            {% if cart and cart.items|length > 0 %}
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <div class="bg-light rounded p-4 mb-4">
+                            {% for item in cart.items %}
+                                <div class="d-flex align-items-center mb-4">
+                                    <img class="flex-shrink-0 img-fluid rounded" src="{{ asset('uploads/products/' ~ item.product.image) }}" alt="" style="width: 100px;">
+                                    <div class="w-100 d-flex flex-column text-start ps-4">
+                                        <h5 class="d-flex justify-content-between">
+                                            <span>{{ item.product.name }}</span>
+                                            <span>${{ item.product.price }}</span>
+                                        </h5>
+                                        <div class="d-flex justify-content-between">
+                                            <div class="input-group" style="width: 150px;">
+                                                <button class="btn btn-outline-primary btn-sm" type="button" 
+                                                        onclick="updateQuantity({{ item.id }}, -1, {{ item.product.stock }})"
+                                                        {% if item.quantity <= 1 %}disabled{% endif %}>
+                                                    <i class="fas fa-minus"></i>
+                                                </button>
+                                                <input type="text" 
+                                                       class="form-control text-center" 
+                                                       id="quantity-{{ item.id }}"
+                                                       value="{{ item.quantity }}" 
+                                                       readonly>
+                                                <button class="btn btn-outline-primary btn-sm" type="button" 
+                                                        onclick="updateQuantity({{ item.id }}, 1, {{ item.product.stock }})"
+                                                        {% if item.quantity >= item.product.stock %}disabled{% endif %}>
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </div>
+                                            <small class="text-muted d-block">
+                                                {{ item.product.stock }} available
+                                            </small>
+                                            <button class="btn btn-sm btn-danger" onclick="removeItem({{ item.id }})">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                        <div id="item-total-{{ item.id }}" class="text-end">
+                                            {{ (item.product.price * item.quantity)|number_format(2) }} TND
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="bg-light rounded p-4">
+                            <h4 class="mb-4">Cart Summary</h4>
+                            <div class="d-flex justify-content-between mb-3">
+                                <h5 class="mb-0">Total:</h5>
+                                <h5 class="mb-0">${{ cart.total }}</h5>
+                            </div>
+                            <a href="{{ path('app_validate_cart') }}" class="btn btn-primary w-100 py-3">
+                                Proceed to Checkout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-shopping-cart fa-4x text-primary mb-4"></i>
+                    <h3>Your cart is empty</h3>
+                    <p>Browse our menu and discover our delicious meals!</p>
+                    <a href="{{ path('app_home') }}" class="btn btn-primary">Continue Shopping</a>
+                </div>
+            {% endif %}
         </div>
-    {% endif %}
+    </div>
+
+    <!-- Footer Start -->
+    {% include 'partials/_footer.html.twig' %}
 </div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+    async function updateQuantity(itemId, change, currentStock) {
+        const quantityInput = document.querySelector(`#quantity-${itemId}`);
+        const currentQuantity = parseInt(quantityInput.value);
+        const newQuantity = currentQuantity + change;
+
+        // Validate new quantity
+        if (newQuantity <= 0) {
+            alert('Quantity cannot be less than 1');
+            return;
+        }
+
+        if (newQuantity > currentStock) {
+            alert(`Only ${currentStock} items available in stock`);
+            return;
+        }
+
+        try {
+            // Update to use the correct route name that matches the controller
+            const response = await fetch(`/cart/update/${itemId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token('update-quantity') }}'
+                },
+                body: JSON.stringify({ quantity: newQuantity })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok && data.success) {
+                // Update quantity display
+                quantityInput.value = newQuantity;
+                // Update total price
+                document.getElementById('cart-total').textContent = `$${data.newTotal.toFixed(2)}`;
+                // Enable/disable buttons based on new quantity
+                document.querySelector(`button[onclick="updateQuantity(${itemId}, -1, ${currentStock})"]`)
+                    .disabled = newQuantity <= 1;
+                document.querySelector(`button[onclick="updateQuantity(${itemId}, 1, ${currentStock})"]`)
+                    .disabled = newQuantity >= currentStock;
+            } else {
+                alert(data.message || 'Failed to update quantity');
+            }
+        } catch (error) {
+            }
+    }
+
+    async function removeItem(itemId) {
+        if (confirm('Are you sure you want to remove this item?')) {
+            try {
+                fetch(`{{ path('app_cart_remove', {'id': 'ITEM_ID'}) | raw }}`.replace('ITEM_ID', itemId), {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token('remove-item') }}'
+                    }
+                });
+                
+                if (response.ok) {
+                    location.reload();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to remove item');
+            }
+        }
+    }
+</script>
 {% endblock %}

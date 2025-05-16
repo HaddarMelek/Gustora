@@ -2,24 +2,45 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Invoice #{{ order.id }}</title>
+    <title>IInvoice for Order ID:{{ order.id }} - Gustora</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
+            color: #444;
         }
         .header {
             text-align: center;
             margin-bottom: 30px;
-            border-bottom: 2px solid #eee;
+            border-bottom: 2px solid #FEA116;
             padding-bottom: 20px;
         }
-        .logo {
-            max-width: 150px;
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin-bottom: 15px;
         }
-        .invoice-info {
+        .logo {
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
+        }
+        .restaurant-name {
+            color: #FEA116;
+            font-size: 2em;
+            font-weight: bold;
+            margin: 0;
+        }
+        .invoice-title {
+            color: #0F172B;
+            margin-top: 10px;
+        }
+        .invoice-info, .customer-info {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
             margin-bottom: 30px;
         }
         table {
@@ -33,22 +54,30 @@
             border-bottom: 1px solid #ddd;
         }
         th {
-            background-color: #f8f9fa;
+            background-color: #0F172B;
+            color: white;
         }
         .total {
             text-align: right;
             font-size: 1.2em;
             font-weight: bold;
+            color: #FEA116;
         }
-        .customer-info {
-            margin-bottom: 30px;
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #666;
+            font-size: 0.9em;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <img src="{{ asset('assets/img/favicon.ico') }}" class="logo">
-        <h1>Invoice #{{ order.id }}</h1>
+        <div class="logo-container">
+            <img src="{{ absolute_url(asset('img/logo.png')) }}" class="logo" alt="Gustora Logo">
+            <h1 class="restaurant-name">Gustora</h1>
+        </div>
+        <h2 class="invoice-title">Invoice #{{ order.id }}</h2>
     </div>
 
     <div class="invoice-info">
@@ -88,5 +117,10 @@
             </tr>
         </tfoot>
     </table>
+
+    <div class="footer">
+        <p>Thank you for choosing Gustora!</p>
+        <p>For any questions, please contact us at support@gustora.com</p>
+    </div>
 </body>
 </html>

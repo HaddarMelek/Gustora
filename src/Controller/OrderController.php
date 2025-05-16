@@ -45,6 +45,7 @@ class OrderController extends AbstractController
               ->setStatus('pending')
               ->setPaymentMethod($request->request->get('paymentMethod', 'Cash on Delivery'));
 
+        $totalAmount = 0.0;
         // Convert cart items to order items
         foreach ($cart->getItems() as $cartItem) {
             $orderItem = new OrderItem();
@@ -53,8 +54,12 @@ class OrderController extends AbstractController
                      ->setQuantity($cartItem->getQuantity())
                      ->setPrice($cartItem->getProduct()->getPrice());
             
+            $totalAmount += $orderItem->getSubtotal();
             $entityManager->persist($orderItem);
         }
+
+        // Set the total amount before persisting
+        $order->setTotalAmount($totalAmount);
 
         // Generate invoice PDF
         $pdf = $pdfGenerator->generatePdf('invoice/invoice.html.twig', [
@@ -144,6 +149,7 @@ class OrderController extends AbstractController
               ->setStatus(Order::STATUS_PENDING)
               ->setPaymentMethod('not_specified');
 
+        $totalAmount = 0.0;
         foreach ($cart->getItems() as $cartItem) {
             $orderItem = new OrderItem();
             $orderItem->setOrder($order)
@@ -151,8 +157,12 @@ class OrderController extends AbstractController
                       ->setQuantity($cartItem->getQuantity())
                       ->setPrice($cartItem->getProduct()->getPrice());
 
+            $totalAmount += ($cartItem->getQuantity() * $cartItem->getProduct()->getPrice());
             $order->addItem($orderItem);
         }
+
+        // Set the total amount before persisting
+        $order->setTotalAmount($totalAmount);
 
         $em->persist($order);
         $em->flush();

@@ -1,29 +1,143 @@
-{% extends 'base.html.twig' %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Order Confirmation - Gustora</title>
+    <style>
+        body {
+            font-family: 'Heebo', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+        }
+        .header {
+            text-align: center;
+            padding: 20px;
+            background-color: #0F172B;
+        }
+        .logo {
+            max-width: 150px;
+            margin-bottom: 15px;
+        }
+        .restaurant-name {
+            color: #FEA116;
+            font-size: 32px;
+            margin: 0;
+            font-weight: bold;
+        }
+        .title {
+            color: #FEA116;
+            text-align: center;
+            font-size: 24px;
+            margin: 20px 0;
+        }
+        .order-details {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border: 1px solid #dee2e6;
+        }
+        .order-items {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .order-items th {
+            background-color: #0F172B;
+            color: #ffffff;
+            padding: 12px;
+            text-align: left;
+        }
+        .order-items td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .total {
+            text-align: right;
+            color: #FEA116;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+            border-top: 2px solid #FEA116;
+            margin-top: 20px;
+        }
+        .contact-info {
+            background-color: #0F172B;
+            color: #ffffff;
+            padding: 15px;
+            text-align: center;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #FEA116;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="{{ absolute_url(asset('img/logo.png')) }}" alt="Gustora" class="logo">
+            <h1 class="restaurant-name">Gustora</h1>
+        </div>
 
-{% block body %}
-<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-    <h1 style="color: #28a745; text-align: center;">Thank You for Your Order!</h1>
-    
-    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 5px; margin: 20px 0;">
-        <p>Dear {{ order.user.email }},</p>
+        <h2 class="title">Thank You for Your Order!</h2>
         
-        <p>We are pleased to confirm that we have received your order #{{ order.id }}. Your order will be delivered within the next 2 hours.</p>
-        
-        <h3>Order Details:</h3>
-        <ul style="list-style: none; padding: 0;">
-            <li><strong>Order Number:</strong> #{{ order.id }}</li>
-            <li><strong>Date:</strong> {{ order.createdAt|date('Y-m-d H:i:s') }}</li>
-            <li><strong>Total Amount:</strong> {{ order.totalAmount|number_format(2) }} TND</li>
-            <li><strong>Payment Method:</strong> {{ order.paymentMethod }}</li>
-        </ul>
+        <div class="order-details">
+            <p>Dear {{ order.user.email }},</p>
+            
+            <p>We are pleased to confirm that we have received your order. Your delicious meal will be delivered within the next 2 hours.</p>
+            
+            <table class="order-items">
+                <tr>
+                    <th>Order ID:</th>
+                    <td>{{ order.id }}</td>
+                </tr>
+                <tr>
+                    <th>Date:</th>
+                    <td>{{ order.createdAt|date('Y-m-d H:i:s') }}</td>
+                </tr>
+                <tr>
+                    <th>Payment Method:</th>
+                    <td>{{ order.paymentMethod|title }}</td>
+                </tr>
+                <tr>
+                    <th>Total Amount:</th>
+                    <td class="total">{{ order.totalAmount|number_format(2) }} TND</td>
+                </tr>
+            </table>
 
-        <p>Your invoice is attached to this email as a PDF document.</p>
-        
-        <p>If you have any questions about your order, please don't hesitate to contact us.</p>
+            <p>Your invoice is attached to this email as a PDF document.</p>
+        </div>
+
+        <div class="contact-info">
+            <p>Questions about your order?</p>
+            <p>Contact us at: <strong>support@gustora.com</strong></p>
+            <p>Or call us: <strong>+216 123 456 789</strong></p>
+        </div>
+
+        <div class="footer">
+            <p>Thank you for choosing Gustora!</p>
+            <p>Follow us on social media for updates and special offers:</p>
+            <p>🌐 www.gustora.com | 📱 @gustora | 📍 Your Location</p>
+        </div>
     </div>
-
-    <div style="text-align: center; margin-top: 20px; color: #6c757d;">
-        <p>Best regards,<br>The Gustora Team</p>
-    </div>
-</div>
-{% endblock %}
+</body>
+</html>
