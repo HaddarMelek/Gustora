@@ -1,50 +1,66 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Product{% endblock %}
+{% block title %}Product Details - Gustora{% endblock %}
 
 {% block body %}
-    <h1>Product</h1>
-
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ product.id }}</td>
-            </tr>
-            <tr>
-                <th>Name</th>
-                <td>{{ product.name }}</td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ product.description }}</td>
-            </tr>
-            <tr>
-                <th>Price</th>
-                <td>{{ product.price }}</td>
-            </tr>
-            <tr>
-                <th>Stock</th>
-                <td>{{ product.stock }}</td>
-            </tr>
-            <tr>
-                <th>Image</th>
-              <td>
-                    {% if product.image %}
-                        <img src="{{ vich_uploader_asset(product, 'imageFile') }}" width="50">
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <th>Category</th>
-                <td>{{ product.category.name }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_product_index') }}">back to list</a>
-
-    <a href="{{ path('app_product_edit', {'id': product.id}) }}">edit</a>
-
-    {{ include('product/_delete_form.html.twig') }}
+<div class="container-xxl p-0">
+    <div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg mt-5 border-0 rounded-4">
+                <div class="card-header bg-white text-dark text-center rounded-top border-bottom">
+                    <h2 class="mb-0 fw-bold">Product Details</h2>
+                </div>
+                <div class="card-body bg-light rounded-bottom">
+                    <table class="table table-bordered table-striped mb-4">
+                        <tbody>
+                            <tr>
+                                <th scope="row" class="w-25">Id</th>
+                                <td>{{ product.id }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Name</th>
+                                <td>{{ product.name }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Description</th>
+                                <td>{{ product.description }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Price</th>
+                                <td>{{ product.price }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Stock</th>
+                                <td>{{ product.stock }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Image</th>
+                                <td>
+                                    {% if product.image %}
+                                        <img src="{{ vich_uploader_asset(product, 'imageFile') }}" width="50">
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Category</th>
+                                <td>{{ product.category.name }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ path('app_product_index') }}" class="btn btn-primary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to list
+                        </a>
+                        <a href="{{ path('app_product_edit', {'id': product.id}) }}" class="btn btn-success">
+                            <i class="fas fa-edit me-2"></i>Edit
+                        </a>
+                        <div>
+                            {{ include('product/_delete_form.html.twig', {'button_class': 'btn btn-danger'}) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

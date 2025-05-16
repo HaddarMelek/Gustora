@@ -3,46 +3,63 @@
 {% block title %}Product index{% endblock %}
 
 {% block body %}
-    <h1>Product index</h1>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Price</th>
-                <th>Stock</th>
-                <th>Image</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for product in products %}
-            <tr>
-                <td>{{ product.id }}</td>
-                <td>{{ product.name }}</td>
-                <td>{{ product.description }}</td>
-                <td>{{ product.price }}</td>
-                <td>{{ product.stock }}</td>
-                  <td>
-                    {% if product.image %}
-                        <img src="{{ vich_uploader_asset(product, 'imageFile') }}" 
-                             style="height: 50px;">
-                    {% endif %}
-                </td>
-                <td>
-                    <a href="{{ path('app_product_show', {'id': product.id}) }}">show</a>
-                    <a href="{{ path('app_product_edit', {'id': product.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="7">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_product_new') }}">Create new</a>
+<div class="container-xxl p-0">
+    <div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+        <div class="col-lg-10">
+            <div class="card shadow-lg mt-5 border-0 rounded-4">
+                <div class="card-header bg-white text-dark text-center rounded-top border-bottom">
+                    <h2 class="mb-0 fw-bold">Product List</h2>
+                </div>
+                <div class="card-body bg-light rounded-bottom">
+                    <div class="mb-3 text-end">
+                        <a href="{{ path('app_product_new') }}" class="btn btn-success">
+                            <i class="fas fa-plus me-2"></i> Create New Product
+                        </a>
+                    </div>
+                    <table class="table table-bordered table-striped mb-4">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Image</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for product in products %}
+                            <tr>
+                                <td>{{ product.id }}</td>
+                                <td>{{ product.name }}</td>
+                                <td>{{ product.description }}</td>
+                                <td>{{ product.price }}</td>
+                                <td>{{ product.stock }}</td>
+                                <td>
+                                    {% if product.image %}
+                                        <img src="{{ vich_uploader_asset(product, 'imageFile') }}" style="height: 50px;">
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ path('app_product_show', {'id': product.id}) }}" class="btn btn-primary btn-sm me-1">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ path('app_product_edit', {'id': product.id}) }}" class="btn btn-success btn-sm me-1">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center">No records found</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

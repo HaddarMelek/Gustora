@@ -3,9 +3,23 @@
 {% block title %}New Product{% endblock %}
 
 {% block body %}
-    <h1>Create new Product</h1>
-
-    {{ include('product/_form.html.twig') }}
-
-    <a href="{{ path('app_product_index') }}">back to list</a>
+<div class="container-xxl p-0">
+    <div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg mt-5 border-0 rounded-4">
+                <div class="card-header bg-white text-dark text-center rounded-top border-bottom">
+                    <h2 class="mb-0 fw-bold">Create New Product</h2>
+                </div>
+                <div class="card-body bg-light rounded-bottom">
+                    {{ include('product/_form.html.twig', {'button_label': 'Create', 'button_class': 'btn btn-success w-100'}) }}
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ path('app_product_index') }}" class="btn btn-primary px-4">
+                            <i class="fas fa-arrow-left me-2"></i>Back to list
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
