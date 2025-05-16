@@ -2,28 +2,83 @@
 
 {% extends 'base.html.twig' %}
 
-{% block title %}Admin Dashboard{% endblock %}
+{% block title %}Admin Dashboard - Gustora{% endblock %}
 
 {% block body %}
-    <h1>Welcome, Admin!</h1>
-    <p>This is your admin dashboard.</p>
+    <div class="container-xxl bg-white p-0">
+        <!-- Spinner Start -->
+        <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+        <!-- Spinner End -->
 
-    <p>Email - {{ user.email }}</p>
-    <p>Phone Number - +{{ user.countryCode }} {{ user.phoneNumber }}</p>
+        <!-- Navbar & Hero Start -->
+        <div class="container-xxl position-relative p-0">
+            {% include 'partials/_navbar.html.twig' with {'current_page': 'admin_dashboard'} %}
 
-    <div class="d-grid gap-3">
-        <a href="{{ path('app_category_index') }}" class="btn btn-primary">
-            <i class="fas fa-list me-2"></i> Manage Categories
-        </a>
-        <a href="{{ path('app_product_index') }}" class="btn btn-success">
-            <i class="fas fa-boxes me-2"></i> Manage Products
-        </a>
-        <a href="{{ path('admin_contact_messages') }}" class="btn btn-info">
-            <i class="fas fa-envelope me-2"></i> Contact Messages
-        </a>
-        <a href="{{ path('app_logout') }}" class="btn btn-danger">
-            <i class="fas fa-sign-out-alt me-2"></i> Logout
-        </a>
+            <div class="container-xxl py-5 bg-dark hero-header mb-5">
+                <div class="container text-center my-5 pt-5 pb-4">
+                    <h1 class="display-3 text-white mb-3 animated slideInDown">Admin Dashboard</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center text-uppercase">
+                            <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Home</a></li>
+                            <li class="breadcrumb-item text-white active" aria-current="page">Admin Dashboard</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <!-- Navbar & Hero End -->
+
+        <!-- Dashboard Content Start -->
+        <div class="container-xxl py-5">
+            <div class="container">
+                <div class="row mb-4">
+                    <!-- Admin Information -->
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h2 class="card-title mb-4">Admin Information</h2>
+                                <p><strong>Email:</strong> {{ user.email }}</p>
+                                <p><strong>Phone:</strong> +{{ user.countryCode }} {{ user.phoneNumber }}</p>
+                                <a href="{{ path('app_logout') }}" class="btn btn-danger">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Quick Actions -->
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h2 class="card-title mb-4">Quick Actions</h2>
+                                <div class="d-flex flex-column gap-3">
+                                    <a href="{{ path('app_category_index') }}" class="btn btn-primary">
+                                        <i class="fas fa-list me-2"></i> Manage Categories
+                                    </a>
+                                    <a href="{{ path('app_product_index') }}" class="btn btn-success">
+                                        <i class="fas fa-boxes me-2"></i> Manage Products
+                                    </a>
+                                    <a href="{{ path('admin_contact_messages') }}" class="btn btn-info">
+                                        <i class="fas fa-envelope me-2"></i> Contact Messages
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- You can add more admin widgets or stats here if needed -->
+            </div>
+        </div>
+        <!-- Dashboard Content End -->
+
+        <!-- Footer -->
+        {% include 'partials/_footer.html.twig' %}
+
+        <!-- Back to Top -->
+        <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
     </div>
 {% endblock %}
 
