@@ -1,35 +1,211 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello!{% endblock %}
+{% block title %}User Dashboard - Gustora{% endblock %}
 
 {% block body %}
-<div class="form-container">
-    <div class="card">
-        <div class="card-header">
-            Dashboard
+    <div class="container-xxl bg-white p-0">
+        <!-- Spinner Start -->
+        <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
         </div>
-        <div class="card-body">
-            <h5 class="card-title">Email - {{ user.email }}</h5>
-            <p class="card-text">Phone Number - {{ user.countryCode }} {{ user.phoneNumber }}</p>
-            <a href="/logout" class="btn btn-primary">Logout</a>
+        <!-- Spinner End -->
+
+        <!-- Navbar & Hero Start -->
+        <div class="container-xxl position-relative p-0">
+            {% include 'partials/_client_navbar.html.twig' %}
+
+            <div class="container-xxl py-5 bg-dark hero-header mb-5">
+                <div class="container text-center my-5 pt-5 pb-4">
+                    <h1 class="display-3 text-white mb-3 animated slideInDown">User Dashboard</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center text-uppercase">
+                            <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Home</a></li>
+                            <li class="breadcrumb-item text-white active" aria-current="page">Dashboard</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
         </div>
+        <!-- Navbar & Hero End -->
+
+        <!-- Dashboard Content Start -->
+        <div class="container-xxl py-5">
+            <div class="container">
+                <!-- Account Info and Quick Actions in Same Line -->
+                <div class="row mb-4">
+                    <!-- Account Information -->
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h2 class="card-title mb-4">Account Information</h2>
+                                <p><strong>Email:</strong> {{ user.email }}</p>
+                                <p><strong>Phone:</strong> +{{ user.countryCode }} {{ user.phoneNumber }}</p>
+                                <a href="/logout" class="btn btn-danger">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h2 class="card-title mb-4">Quick Actions</h2>
+                                <div class="d-flex flex-column gap-3">
+                                    <a href="{{ path('app_products_public') }}" class="btn btn-primary">
+                                        <i class="fas fa-boxes me-2"></i>View Products
+                                    </a>
+                                    <a href="{{ path('app_cart_show') }}" class="btn btn-outline-primary">
+                                        <i class="fas fa-shopping-cart me-2"></i> 
+                                        View Cart
+                                        {% if app.user.cart and app.user.cart.items|length > 0 %}
+                                            <span class="badge bg-danger ms-1">{{ app.user.cart.items|length }}</span>
+                                        {% endif %}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Section -->
+                <div class="card">
+                   
+                </div>
+            </div>
+        </div>
+        <!-- Dashboard Content End -->
+
+        <!-- Footer -->
+        {% include 'partials/_footer.html.twig' %}
+
+        <!-- Back to Top -->
+        <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
     </div>
-    <div class="d-flex gap-3 mb-4">
-        <a href="{{ path('app_cart_show') }}" class="btn btn-primary">
-            <i class="fas fa-shopping-cart"></i> 
-            View Cart
-            {% if app.user.cart and app.user.cart.items|length > 0 %}
-                <span class="badge bg-danger">{{ app.user.cart.items|length }}</span>
-            {% endif %}
-        </a>
-        {# ... other buttons ... #}
-    </div>
-    <div class="col-md-9">
-        {{ render(controller('App\\Controller\\PublicProductController::index')) }}
-    </div>
-</div>
 {% endblock %}
 
 {% block javascripts %}
+    {{ parent() }}
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const generateOTP = async () => {
+            try {
+                const response = await fetch("{{ path('generateOTP') }}", {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                // Check if response is JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Server returned invalid content type');
+                }
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to send OTP');
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('OTP Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message
+                });
+                return false;
+            }
+        };
+
+        const verifyOTP = async (otp) => {
+            try {
+                console.log('Verifying OTP:', otp); // Debug log
+                const response = await fetch("{{ path('verifyOTP') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ otp: otp.trim() }) // Trim any whitespace
+                });
+
+                const data = await response.json();
+                console.log('Verification response:', data); // Debug log
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Verification failed');
+                }
+                
+                return data;
+            } catch (error) {
+                console.error('Verification error:', error);
+                throw error;
+            }
+        };
+
+        const showOTPForm = async () => {
+            Swal.fire({
+                title: 'Sending OTP...',
+                text: 'Please wait while we send the code to your phone',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            const otpSent = await generateOTP();
+            
+            if (!otpSent) return;
+
+            Swal.fire({
+                title: 'Verify Your Phone Number',
+                html: `Please enter the verification code sent to<br>+{{ user.countryCode }} {{ user.phoneNumber }}`,
+                input: 'text',
+                inputAttributes: {
+                    autocapitalize: 'off',
+                    maxlength: 6,
+                    minlength: 6,
+                    placeholder: 'Enter the 6-digit code'
+                },
+                showCancelButton: false, // Remove cancel button
+                confirmButtonText: 'Verify',
+                showLoaderOnConfirm: true,
+                allowOutsideClick: false, // Prevent closing
+                allowEscapeKey: false, // Prevent closing with Esc key
+                preConfirm: async (otp) => {
+                    if (!/^\d{6}$/.test(otp)) {
+                        Swal.showValidationMessage('Please enter a valid 6-digit code');
+                        return false;
+                    }
+                    try {
+                        return await verifyOTP(otp);
+                    } catch (error) {
+                        Swal.showValidationMessage(error.message);
+                        return false;
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Success',
+                        text: result.value.message,
+                        icon: 'success'
+                    });
+                }
+            });
+        }
+
+        // Auto-trigger OTP verification when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            showOTPForm();
+        });
+    </script>
 {% endblock %}

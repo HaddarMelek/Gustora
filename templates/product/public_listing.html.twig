@@ -2,7 +2,15 @@
 
 {% block body %}
     <div class="container mt-5">
-       
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <a href="{{ path('user_dashboard') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+        </a>
+        <p class="mb-0 text-muted">
+            Page {{ pagination.currentPageNumber }} of {{ pagination.pageCount }}
+        </p>
+    </div>
+    
 <div class="container">
         <div class="row mt-4">
             <div class="col-md-3">
@@ -47,9 +55,10 @@
                             <h5 class="card-title text-center">{{ product.name }}</h5>
                             <p class="card-text text-muted text-center mb-3">Price: {{ product.price }} TND</p>
                             <div class="d-flex gap-2">
+                             {% if is_granted('ROLE_USER') %}
                                 <a href="{{ path('app_public_product_show', {'id': product.id}) }}" 
                                    class="btn btn-outline-primary flex-grow-1">View Details</a>
-                                {% if is_granted('ROLE_USER') %}
+                               
                                     <form action="{{ path('app_cart_add', {'id': product.id}) }}" method="POST" class="flex-grow-1">
                                         <button type="submit" class="btn btn-success w-100">
                                             <i class="fas fa-cart-plus"></i> Add to Cart
@@ -73,6 +82,6 @@
     </div>
     </div>
      <nav aria-label="Page navigation" class="mt-4">
-        {{ knp_pagination_render(pagination) }}
+                {{ knp_pagination_render(pagination) }}
     </nav>
 {% endblock %}
